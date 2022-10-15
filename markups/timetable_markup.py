@@ -9,6 +9,11 @@ from telebot import types
 # row_width используется в сочетании с функцией add().
 # Он определяет, сколько кнопок помещается в каждом ряду, прежде чем переходить к следующему ряду.
 
-markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+timetable_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 itebtn1 = types.KeyboardButton("Дай расписание шаболда")
-markup.add(itebtn1)
+itebtn2 = types.KeyboardButton("Пойти нахуй")
+timetable_markup.add(itebtn1, itebtn2)
+
+link_markup = types.InlineKeyboardMarkup()
+itebtn_lawrence_link = types.InlineKeyboardButton("нахуй", url="https://lava-land.ru")
+link_markup.add(itebtn_lawrence_link)

@@ -23,8 +23,9 @@ class TGBotUserRepository:
         self.cursor.execute("UPDATE users SET class = ? WHERE user_id = ?", (user_class, user_id))
         return self.connection.commit()
 
-    def set_user_name(self, user_id):
-        pass
+    def set_user_name(self, user_id, user_name):
+        self.cursor.execute("UPDATE users SET name = ? WHERE user_id = ?", (user_name, user_id))
+        return self.connection.commit()
 
     def _close_db(self):
         self.connection.close()
