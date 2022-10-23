@@ -10,9 +10,10 @@ from telebot import types
 # Он определяет, сколько кнопок помещается в каждом ряду, прежде чем переходить к следующему ряду.
 
 timetable_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-itebtn1 = types.KeyboardButton("Дай расписание шаболда")
+itebtn1 = types.KeyboardButton("Дай общее расписание шаболда")
 itebtn2 = types.KeyboardButton("Пойти нахуй")
-timetable_markup.add(itebtn1, itebtn2)
+itebtn3 = types.KeyboardButton("Дай мое расписание шаболда")
+timetable_markup.add(itebtn1, itebtn2, itebtn3)
 
 link_markup = types.InlineKeyboardMarkup()
 itebtn_lawrence_link = types.InlineKeyboardButton("нахуй", url="https://lava-land.ru")

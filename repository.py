@@ -11,7 +11,11 @@ class TGBotUserRepository:
         return bool(len(db_request.fetchall()))
 
     def get_user_name_by_id(self, user_id):
-        db_request = self.cursor.execute("SELECT name FROM users WHERE 'user_id' = ?", (user_id,))
+        db_request = self.cursor.execute("SELECT name FROM users WHERE user_id = ?", (user_id,))
+        return db_request.fetchone()[0]
+
+    def get_user_class_by_id(self, user_id):
+        db_request = self.cursor.execute("SELECT class FROM users WHERE user_id = ?", (user_id,))
         return db_request.fetchone()[0]
 
     def add_user(self, user_name, user_id, user_class=None):

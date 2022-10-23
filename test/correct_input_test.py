@@ -1,3 +1,4 @@
+import json
 import re
 def is_correct_class(user_class):
     if len(user_class) > 3:
@@ -11,13 +12,9 @@ def is_correct_class(user_class):
             return True if re.fullmatch(pattern, user_class) else False
 
 
-print(is_correct_class("11A"))
-print(is_correct_class("10d"))
-print(is_correct_class("12B"))
-print(is_correct_class("10A"))
-#Русские
-print(is_correct_class("10д"))
-print(is_correct_class("9в"))
-print(is_correct_class("8и"))
-print(is_correct_class("90а"))
 
+data = json.dumps({'lessons': [{'id': 1, 'name': 'Математика', 'required': True, 'teacher': 'Мария Александровна Зубакова',
+                      'times': {'10Б': {'Monday': [[8, 0, 8, 30]]}}}]},
+                    ).encode("utf-8")
+d = json.loads(data.decode("utf-8"))
+print(d)

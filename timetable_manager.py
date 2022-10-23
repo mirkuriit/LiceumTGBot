@@ -1,17 +1,33 @@
+import json
+import requests
+
 class TimeTableManager:
     def __init__(self):
         # todo сделать класс работы с лаврентьевским Api
         self.restManager = None
         #self.timatable_json = None
-        self.timatable_picture = open("resourses/timetable.jpg", "rb")
+        self.timetable_picture = open("resourses/timetable.jpg", "rb")
 
-    def __move_from_json_to_domain(self, timetable):
-        pass
+    def __get_class_id(self, user_class):
+        # todo сделать запросом к бд
+        if user_class.lower() == '10б':
+            return 1
+        return 1
 
-    def __get_actual_timetable_json(self, user_class):
-        pass
+    def __move_from_json_to_domain(self, timetable_json):
+        print(timetable_json)
+        timetable_domain = json.dumps(timetable_json).encode('utf-8')
+        timetable_domain = json.loads(timetable_domain.decode('utf-8'))
+        return timetable_domain
 
-    def get_timetable(self):
-        pass
+    def __get_timetable_json(self, user_class):
+        user_class_id = self.__get_class_id(user_class)
+        timetable_json = requests.get(f'http://api.lava-land.ru/school_class/{user_class_id}/lesson').json()
+        return timetable_json
 
-
+    def get_timetable(self, user_class):
+        return self.__move_from_json_to_domain(
+            self.__get_timetable_json(
+                user_class
+            )
+        )

@@ -1,26 +1,33 @@
 import telebot
 from markups.timetable_markup import timetable_markup, link_markup
 import re
+from timetable_manager import TimeTableManager
+
 global timatable_picture
 from repository import TGBotUserRepository
 
 bot = telebot.TeleBot('5730707714:AAEsGA4qxpTvBG0ycqgPZG_KNfTBExL2i-0')
 user_repository = TGBotUserRepository('D:/DBases/liceumTGbot.db')
+timetable_manager = TimeTableManager()
 
 
-def _is_correct_class(user_class):
+def _is_correct_class(user_class_str):
     pattern1011 = r'1[0-1][А-Ва-в]'
     pattern89 = r'[8-9][А-Ва-в]'
-    if len(user_class) > 3:
+    if len(user_class_str) > 3:
         return False
-    elif len == 3:
-        return bool(re.fullmatch(pattern1011, user_class))
+    elif len(user_class_str) == 3:
+        return bool(re.fullmatch(pattern1011, user_class_str))
     else:
-        return bool(re.fullmatch(pattern89, user_class))
+        return bool(re.fullmatch(pattern89, user_class_str))
 
 
 def bot_functions_index(message):
-    bot.send_message(message.from_user.id, "Чего тебе надобно?", reply_markup=timetable_markup)
+    bot.send_message(
+        message.from_user.id,
+        "Чего тебе надобно?",
+        reply_markup=timetable_markup
+    )
 
 
 def get_class(message):
@@ -63,41 +70,49 @@ def send_lawrence_link(message):
 
 @bot.message_handler(commands=['start', 'help', 'reg', 'edit_class', 'edit_name', 'func'])
 def index(message):
+    user_id = message.from_user.id
     match message.text:
         case "/start":
             bot.reply_to(message, f"Приветствуем тебя, {message.from_user.username}, "
                                   "в нашем уютном лицее. Для "
                                   "продолжения используй /reg")
         case "/help":
-            bot.send_message(message.from_user.id, "Тут будут все команды")
+            bot.send_message(user_id, "Тут будут все команды")
         case "/reg":
-            if user_repository.is_user_exists(message.from_user.id):
+            if user_repository.is_user_exists(user_id):
                 bot.send_message(message.from_user.id,
-                                 "Вы уже прошли регистрацию. Для изменения профиля используйте команду, которая еще не реализована",
+                                 "Вы уже прошли регистрацию. "
+                                 "Для изменения профиля используйте команду, которая еще не реализована",
                                  reply_markup=timetable_markup)
             else:
-                bot.send_message(message.from_user.id, "Введите свое имя")
+                bot.send_message(user_id, "Введите свое имя")
                 bot.register_next_step_handler(message, get_name)
         case "/edit_class":
             if user_repository.is_user_exists(message.from_user.id):
-                bot.send_message(message.from_user.id, "Введите свой новый класс")
+                bot.send_message(user_id, "Введите свой новый класс")
                 bot.register_next_step_handler(message, edit_class)
         case "/edit_name":
-            bot.send_message(message.from_user.id, "Введите новое имя")
+            bot.send_message(user_id, "Введите новое имя")
             bot.register_next_step_handler(message, edit_name)
-
         case "/func":
             bot_functions_index(message)
 
 
 @bot.message_handler(content_types=["text"])
 def to_react(message):
+    user_id = message.from_user.id
     print("get_text_message")
     match message.text.lower():
-        case "дай расписание шаболда":
-            # todo расписание в отдельный класс
-            timatable_picture = open("resourses/timetable.jpg", "rb")
-            bot.send_photo(message.from_user.id, timatable_picture)
+        case "дай общее расписание шаболда":
+            timetable_picture = open("resourses/timetable.jpg", "rb")
+            bot.send_photo(user_id, timetable_picture)
+            bot.send_message(user_id, user_repository.get_user_name_by_id(user_id))
+        case "дай мое расписание шаболда":
+            print(user_id)
+            timetable_str = timetable_manager.get_timetable(
+                user_repository.get_user_class_by_id(user_id)
+            )
+            bot.send_message(user_id, timetable_str.values())
         case "пойти нахуй":
             send_lawrence_link(message)
 
