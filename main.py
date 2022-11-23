@@ -1,15 +1,19 @@
 import telebot
+from json_formatter import JsonFormatter
 from markups.timetable_markup import timetable_markup, link_markup
+from timtable_timer import TimetableTimer
 import re
 from timetable_manager import TimeTableManager
 
 global timatable_picture
 from repository import TGBotUserRepository
 
+
 bot = telebot.TeleBot('5730707714:AAEsGA4qxpTvBG0ycqgPZG_KNfTBExL2i-0')
 user_repository = TGBotUserRepository('D:/DBases/liceumTGbot.db')
+formatter = JsonFormatter()
 timetable_manager = TimeTableManager()
-
+timetable_timer = TimetableTimer()
 
 def _is_correct_class(user_class_str):
     pattern1011 = r'1[0-1][А-Ва-в]'
@@ -106,13 +110,17 @@ def to_react(message):
         case "дай общее расписание шаболда":
             timetable_picture = open("resourses/timetable.jpg", "rb")
             bot.send_photo(user_id, timetable_picture)
-            bot.send_message(user_id, user_repository.get_user_name_by_id(user_id))
+            # отладка bot.send_message(user_id, user_repository.get_user_name_by_id(user_id))
         case "дай мое расписание шаболда":
             print(user_id)
-            timetable_str = timetable_manager.get_timetable(
+            timetable = timetable_manager.get_timetable(
                 user_repository.get_user_class_by_id(user_id)
             )
-            bot.send_message(user_id, timetable_str.values())
+            timetable_human = formatter.convert_json_to_human_ol(timetable)
+
+            bot.send_message(user_id, timetable_human)
+        case "до звонка:":
+            bot.send_message(user_id, timetable_timer.get_status())
         case "пойти нахуй":
             send_lawrence_link(message)
 
